@@ -1,10 +1,18 @@
 import { useState } from "react";
 import { HiBellAlert } from "react-icons/hi2";
 import Todo from "./Todo";
+import React from "react";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const TodoApp = () => {
   const [todo, setTodo] = useState<string>("");
   const [todos, setTodos] = useState<string[]>([]);
+  const [completeAccExpanded, setCompleteAccExpanded] =
+    useState<boolean>(false);
 
   const handleChange = (e: any) => {
     setTodo(e.target.value);
@@ -16,6 +24,26 @@ const TodoApp = () => {
     todosCopy.push(todo);
     setTodos(todosCopy);
     setTodo("");
+    setCompleteAccExpanded(true);
+  };
+
+  const handleCompleteAccExpand = () => {
+    setCompleteAccExpanded(!completeAccExpanded);
+  };
+
+  const handleDelete = (todo: string) => {
+    let todosCopy = [...todos];
+    let index = todosCopy.indexOf(todo);
+    todosCopy.splice(index, 1);
+    setTodos(todosCopy);
+  };
+
+  const handleEdit = (todo: string, newTodo: string) => {
+    let todosCopy = [...todos];
+    let index = todosCopy.indexOf(todo);
+    todosCopy[index] = newTodo;
+    console.log(todosCopy[index]);
+    setTodos(todosCopy);
   };
 
   return (
@@ -46,13 +74,74 @@ const TodoApp = () => {
         </form>
       </div>
       <div className="mt-4">
-        {todos.map((todo, index) => {
-          return (
-            <div className="mt-2" key={index}>
-              <Todo title={todo} />
-            </div>
-          );
-        })}
+        <div>
+          <Accordion
+            sx={{
+              backgroundColor: "#155e75",
+              color: "white",
+            }}
+            expanded={completeAccExpanded}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+              onClick={handleCompleteAccExpand}
+            >
+              <Typography>To be done</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {todos.length > 0 ? (
+                todos.map((todo, index) => {
+                  return (
+                    <div className="mt-2" key={index}>
+                      <Todo
+                        handleDelete={handleDelete}
+                        handleEdit={handleEdit}
+                        title={todo}
+                      />
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="flex w-full justify-center items-center">
+                  <Typography
+                    sx={{
+                      fontSize: "15px",
+                    }}
+                  >
+                    You have no tasks
+                  </Typography>
+                </div>
+              )}
+            </AccordionDetails>
+          </Accordion>
+          <Accordion
+            sx={{
+              backgroundColor: "#155e75",
+              color: "white",
+            }}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel2a-content"
+              id="panel2a-header"
+            >
+              <Typography>Completed</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <div className="flex w-full justify-center items-center">
+                <Typography
+                  sx={{
+                    fontSize: "15px",
+                  }}
+                >
+                  You have no tasks
+                </Typography>
+              </div>
+            </AccordionDetails>
+          </Accordion>
+        </div>
       </div>
     </div>
   );
