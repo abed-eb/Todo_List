@@ -21,20 +21,18 @@ const TodoApp = () => {
     setValue(value);
     let todosCopy = [...todos];
     let len = todosCopy.length;
-    let todo: todo = {
-      id: 0,
-      text: "",
-      completed: false,
-    };
-    if (todosCopy.length > 0)
+    let id = 0;
+    let todo: todo | null = null;
+    if (todosCopy.length > 0) {
+      id = parseInt(todosCopy[len - 1].id) + 1;
       todo = {
-        id: todosCopy[len - 1].id + 1,
+        id: id.toString(),
         text: value,
         completed: false,
       };
-    else
+    } else
       todo = {
-        id: 1,
+        id: id.toString(),
         text: value,
         completed: false,
       };
@@ -44,6 +42,7 @@ const TodoApp = () => {
   const handleClick = (e: any) => {
     e.preventDefault();
     let todosCopy = [...todos];
+    console.log(todosCopy);
     if (todo) todosCopy.push(todo);
     setTodos(todosCopy);
     setValue("");
@@ -185,11 +184,11 @@ const TodoApp = () => {
               todos.some((todo) => {
                 return todo.completed === true;
               }) ? (
-                todos.map((todo, index) => {
+                todos.map((todo) => {
                   return (
                     <>
                       {todo.completed ? (
-                        <div className="mt-2" key={index}>
+                        <div className="mt-2" key={todo.id + "c"}>
                           <Todo
                             handleDelete={handleDelete}
                             handleEdit={handleEdit}
