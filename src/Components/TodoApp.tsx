@@ -9,40 +9,79 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const TodoApp = () => {
-  const [todo, setTodo] = useState<string>("");
-  const [todos, setTodos] = useState<string[]>([]);
+  const [value, setValue] = useState<string>("");
+  const [todo, setTodo] = useState<todo | null>(null);
+  const [todos, setTodos] = useState<todo[]>([]);
   const [completeAccExpanded, setCompleteAccExpanded] =
     useState<boolean>(false);
+  const [todoAccExpanded, setTodoAccExpanded] = useState<boolean>(false);
 
   const handleChange = (e: any) => {
-    setTodo(e.target.value);
+    let value = e.target.value;
+    setValue(value);
+    let todosCopy = [...todos];
+    let len = todosCopy.length;
+    let todo: todo = {
+      id: 0,
+      text: "",
+      completed: false,
+    };
+    if (todosCopy.length > 0)
+      todo = {
+        id: todosCopy[len - 1].id + 1,
+        text: value,
+        completed: false,
+      };
+    else
+      todo = {
+        id: 1,
+        text: value,
+        completed: false,
+      };
+    setTodo(todo);
   };
 
   const handleClick = (e: any) => {
     e.preventDefault();
     let todosCopy = [...todos];
-    todosCopy.push(todo);
+    if (todo) todosCopy.push(todo);
     setTodos(todosCopy);
-    setTodo("");
-    setCompleteAccExpanded(true);
+    setValue("");
+    setTodoAccExpanded(true);
   };
 
   const handleCompleteAccExpand = () => {
     setCompleteAccExpanded(!completeAccExpanded);
   };
 
-  const handleDelete = (todo: string) => {
+  const handleTodoAccExpand = () => {
+    setTodoAccExpanded(!todoAccExpanded);
+  };
+
+  const handleDelete = (todo: todo) => {
     let todosCopy = [...todos];
     let index = todosCopy.indexOf(todo);
     todosCopy.splice(index, 1);
     setTodos(todosCopy);
   };
 
-  const handleEdit = (todo: string, newTodo: string) => {
+  const handleEdit = (todo: todo, newTodo: string) => {
     let todosCopy = [...todos];
     let index = todosCopy.indexOf(todo);
-    todosCopy[index] = newTodo;
-    console.log(todosCopy[index]);
+    todosCopy[index].text = newTodo;
+    setTodos(todosCopy);
+  };
+
+  const handleCompletion = (todo: todo) => {
+    if (
+      todos.some((todo) => {
+        return todo.completed === true;
+      })
+    )
+      setCompleteAccExpanded(true);
+    let todosCopy = [...todos];
+    let index = todosCopy.indexOf(todo);
+    todosCopy[index].completed = !todosCopy[index].completed;
     setTodos(todosCopy);
   };
 
@@ -60,7 +99,7 @@ const TodoApp = () => {
             <input
               className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               onChange={handleChange}
-              value={todo}
+              value={value}
               placeholder="Type you todo"
             />
             <button
@@ -80,27 +119,37 @@ const TodoApp = () => {
               backgroundColor: "#155e75",
               color: "white",
             }}
-            expanded={completeAccExpanded}
+            expanded={todoAccExpanded}
           >
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1a-content"
               id="panel1a-header"
-              onClick={handleCompleteAccExpand}
+              onClick={handleTodoAccExpand}
             >
               <Typography>To be done</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              {todos.length > 0 ? (
-                todos.map((todo, index) => {
+              {todos.length > 0 &&
+              todos.some((todo) => {
+                return todo.completed === false;
+              }) ? (
+                todos.map((todo) => {
                   return (
-                    <div className="mt-2" key={index}>
-                      <Todo
-                        handleDelete={handleDelete}
-                        handleEdit={handleEdit}
-                        title={todo}
-                      />
-                    </div>
+                    <>
+                      {!todo.completed ? (
+                        <div className="mt-2" key={todo.id}>
+                          <Todo
+                            handleDelete={handleDelete}
+                            handleEdit={handleEdit}
+                            todo={todo}
+                            handleCompletion={handleCompletion}
+                          />
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </>
                   );
                 })
               ) : (
@@ -121,24 +170,50 @@ const TodoApp = () => {
               backgroundColor: "#155e75",
               color: "white",
             }}
+            expanded={completeAccExpanded}
           >
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel2a-content"
               id="panel2a-header"
+              onClick={handleCompleteAccExpand}
             >
               <Typography>Completed</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <div className="flex w-full justify-center items-center">
-                <Typography
-                  sx={{
-                    fontSize: "15px",
-                  }}
-                >
-                  You have no tasks
-                </Typography>
-              </div>
+              {todos.length > 0 &&
+              todos.some((todo) => {
+                return todo.completed === true;
+              }) ? (
+                todos.map((todo, index) => {
+                  return (
+                    <>
+                      {todo.completed ? (
+                        <div className="mt-2" key={index}>
+                          <Todo
+                            handleDelete={handleDelete}
+                            handleEdit={handleEdit}
+                            todo={todo}
+                            handleCompletion={handleCompletion}
+                          />
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </>
+                  );
+                })
+              ) : (
+                <div className="flex w-full justify-center items-center">
+                  <Typography
+                    sx={{
+                      fontSize: "15px",
+                    }}
+                  >
+                    You have no tasks
+                  </Typography>
+                </div>
+              )}
             </AccordionDetails>
           </Accordion>
         </div>

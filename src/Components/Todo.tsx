@@ -2,32 +2,31 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FileDownloadDoneIcon from "@mui/icons-material/FileDownloadDone";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface props {
-  title: string;
-  handleDelete: (todo: string) => void;
-  handleEdit: (todo: string, newTodo: string) => void;
+  todo: todo;
+  handleDelete: (todo: todo) => void;
+  handleEdit: (todo: todo, newTodo: string) => void;
+  handleCompletion: (todo: todo) => void;
 }
 
-const Todo = ({ title, handleDelete, handleEdit }: props) => {
-  const [completed, setCompleted] = useState<boolean>(false);
-  const [editingTodo, setEditingTodo] = useState<string | null>(null);
-  const [newTodo, setNewTodo] = useState<string>(title);
+const Todo = ({ todo, handleDelete, handleEdit, handleCompletion }: props) => {
+  const [editingTodo, setEditingTodo] = useState<todo | null>(null);
+  const [newTodo, setNewTodo] = useState<string>(todo.text);
 
-  const handleChange = (e: any) => {
-    console.log(e.target.checked);
-    setCompleted(e.target.checked);
+  const handleChange = (todo: todo | null) => {
+    if (todo) handleCompletion(todo);
   };
 
-  const onEdit = (todo: string) => {
+  const onEdit = (todo: todo) => {
     setEditingTodo(todo);
   };
 
-  const onEditComplete = (title: string) => {
+  const onEditComplete = (todo: todo) => {
     setEditingTodo(null);
     console.log(editingTodo);
-    handleEdit(title, newTodo);
+    handleEdit(todo, newTodo);
   };
 
   return (
@@ -38,13 +37,13 @@ const Todo = ({ title, handleDelete, handleEdit }: props) => {
             <div className="flex items-center mr-4 ml-2">
               <input
                 type="checkbox"
-                checked={completed}
-                onChange={handleChange}
+                checked={todo.completed}
+                onChange={() => handleChange(todo)}
                 className="accent-sky-200 focus:ring-0 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               />
             </div>
-            <h1 className={completed ? "line-through text-gray-500" : ""}>
-              {title}
+            <h1 className={todo.completed ? "line-through text-gray-500" : ""}>
+              {todo.text}
             </h1>
           </div>
         ) : (
@@ -58,7 +57,7 @@ const Todo = ({ title, handleDelete, handleEdit }: props) => {
       <div className="flex w-32 items-center justify-around">
         {!editingTodo ? (
           <IconButton
-            onClick={() => onEdit(title)}
+            onClick={() => onEdit(todo)}
             aria-label="edit"
             size="medium"
           >
@@ -66,7 +65,7 @@ const Todo = ({ title, handleDelete, handleEdit }: props) => {
           </IconButton>
         ) : (
           <IconButton
-            onClick={() => onEditComplete(title)}
+            onClick={() => onEditComplete(todo)}
             aria-label="edit"
             size="medium"
           >
@@ -75,7 +74,7 @@ const Todo = ({ title, handleDelete, handleEdit }: props) => {
         )}
 
         <IconButton
-          onClick={() => handleDelete(title)}
+          onClick={() => handleDelete(todo)}
           aria-label="delete"
           size="medium"
         >
