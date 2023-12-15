@@ -91,7 +91,7 @@ const TodoApp = () => {
       <div>
         <form>
           <div className="flex justify-center items-center text-white font-bold h-10">
-            <h1>Type your tasks</h1>
+            <h1>Enter your tasks</h1>
           </div>
           <div className="relative">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
