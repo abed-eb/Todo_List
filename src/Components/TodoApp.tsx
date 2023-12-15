@@ -49,8 +49,8 @@ const TodoApp = () => {
     setTodoAccExpanded(true);
   };
 
-  const handleCompleteAccExpand = () => {
-    setCompleteAccExpanded(!completeAccExpanded);
+  const handleCompleteAccExpand = (state: boolean) => {
+    setCompleteAccExpanded(state);
   };
 
   const handleTodoAccExpand = () => {
@@ -72,14 +72,16 @@ const TodoApp = () => {
   };
 
   const handleCompletion = (todo: todo) => {
-    if (
+    let todosCopy = [...todos];
+    let index = todosCopy.indexOf(todo);
+    if (!todosCopy[index].completed) {
+      handleCompleteAccExpand(true);
+    } else if (
       todos.some((todo) => {
         return todo.completed === true;
       })
     )
-      setCompleteAccExpanded(true);
-    let todosCopy = [...todos];
-    let index = todosCopy.indexOf(todo);
+      handleCompleteAccExpand(true);
     todosCopy[index].completed = !todosCopy[index].completed;
     setTodos(todosCopy);
   };
@@ -126,7 +128,7 @@ const TodoApp = () => {
               id="panel1a-header"
               onClick={handleTodoAccExpand}
             >
-              <Typography>To be done</Typography>
+              <Typography>Todo</Typography>
             </AccordionSummary>
             <AccordionDetails>
               {todos.length > 0 &&
@@ -175,9 +177,9 @@ const TodoApp = () => {
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel2a-content"
               id="panel2a-header"
-              onClick={handleCompleteAccExpand}
+              onClick={() => handleCompleteAccExpand(!completeAccExpanded)}
             >
-              <Typography>Completed</Typography>
+              <Typography>Done</Typography>
             </AccordionSummary>
             <AccordionDetails>
               {todos.length > 0 &&
