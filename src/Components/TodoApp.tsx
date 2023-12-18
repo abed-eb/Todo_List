@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HiBellAlert } from "react-icons/hi2";
 import Todo from "./Todo";
 import React from "react";
@@ -7,14 +7,28 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { editTodo, deleteTodo, completeTodo, addTodo } from "../TodoListSlice";
+import { useTodoDispatch, useTodoSelector } from "../TodoListHooks";
 
 const TodoApp = () => {
+  const initalTodo = {
+    id: "",
+    text: "",
+    completed: false,
+  };
+  const dispatch = useTodoDispatch();
+  const todosList = useTodoSelector((state) => state.todoList.todos);
   const [value, setValue] = useState<string>("");
-  const [todo, setTodo] = useState<todo | null>(null);
-  const [todos, setTodos] = useState<todo[]>([]);
+  const [todo, setTodo] = useState<todo>(initalTodo);
+  const [todos, setTodos] = useState<todo[]>(todosList);
   const [completeAccExpanded, setCompleteAccExpanded] =
     useState<boolean>(false);
   const [todoAccExpanded, setTodoAccExpanded] = useState<boolean>(false);
+
+  // useEffect(() => {
+  //   // let todosList = useTodoSelector((state) => state.todoList.todos);
+  //   setTodos(todosList);
+  // }, []);
 
   const handleChange = (e: any) => {
     let value = e.target.value;
@@ -42,10 +56,11 @@ const TodoApp = () => {
   const handleClick = (e: any) => {
     e.preventDefault();
     let todosCopy = [...todos];
-    console.log(todosCopy);
     if (todo) todosCopy.push(todo);
+    dispatch(addTodo(todo));
     setTodos(todosCopy);
     setValue("");
+    setTodo(initalTodo);
     setTodoAccExpanded(true);
   };
 
@@ -61,13 +76,21 @@ const TodoApp = () => {
     let todosCopy = [...todos];
     let index = todosCopy.indexOf(todo);
     todosCopy.splice(index, 1);
+    dispatch(deleteTodo(todo));
     setTodos(todosCopy);
   };
 
   const handleEdit = (todo: todo, newTodo: string) => {
     let todosCopy = [...todos];
     let index = todosCopy.indexOf(todo);
-    todosCopy[index].text = newTodo;
+    let temp = {
+      id: todo.id,
+      text: newTodo,
+      completed: todo.completed,
+    };
+    todosCopy[index] = temp;
+    let updateTodo = { prev: todo, new: temp };
+    dispatch(editTodo(updateTodo));
     setTodos(todosCopy);
   };
 
@@ -82,8 +105,15 @@ const TodoApp = () => {
       })
     )
       handleCompleteAccExpand(true);
-    todosCopy[index].completed = !todosCopy[index].completed;
+    console.log(todosCopy[index].completed);
+    let temp = {
+      id: todo.id,
+      text: todo.text,
+      completed: !todo.completed,
+    };
+    todosCopy[index] = temp;
     setTodos(todosCopy);
+    dispatch(completeTodo(temp));
   };
 
   return (
