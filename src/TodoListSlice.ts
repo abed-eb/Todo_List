@@ -12,7 +12,6 @@ export const todoListSlice = createSlice({
   } as TodosState,
   reducers: (create) => ({
     deleteTodo: create.reducer<todo>((state, action) => {
-      console.log(action.payload)
       let todo = action.payload
       let index = state.todos.indexOf(todo);
       state.todos.splice(index, 1);
@@ -39,8 +38,13 @@ export const todoListSlice = createSlice({
         return { payload: todo }
       },
       (state, action) => {
+        let tempTodo = {
+          id: action.payload.id,
+          text: action.payload.text,
+          completed: !action.payload.completed,
+        };
         let index = state.todos.indexOf(action.payload);
-        state.todos[index] = action.payload
+        state.todos[index] = tempTodo
       }
     )
   }),

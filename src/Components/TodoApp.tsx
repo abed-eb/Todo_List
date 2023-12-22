@@ -21,14 +21,10 @@ const TodoApp = () => {
   const [value, setValue] = useState<string>("");
   const [todo, setTodo] = useState<todo>(initalTodo);
   const [todos, setTodos] = useState<todo[]>(todosList);
+  const [completedTodos, setCompletedTodos] = useState<todo[]>([]);
   const [completeAccExpanded, setCompleteAccExpanded] =
     useState<boolean>(false);
   const [todoAccExpanded, setTodoAccExpanded] = useState<boolean>(false);
-
-  // useEffect(() => {
-  //   // let todosList = useTodoSelector((state) => state.todoList.todos);
-  //   setTodos(todosList);
-  // }, []);
 
   const handleChange = (e: any) => {
     let value = e.target.value;
@@ -53,7 +49,7 @@ const TodoApp = () => {
     setTodo(todo);
   };
 
-  const handleClick = (e: any) => {
+  const handleAddTodo = (e: any) => {
     e.preventDefault();
     let todosCopy = [...todos];
     if (todo) todosCopy.push(todo);
@@ -77,6 +73,7 @@ const TodoApp = () => {
     let index = todosCopy.indexOf(todo);
     todosCopy.splice(index, 1);
     dispatch(deleteTodo(todo));
+    filterCompletedTodos(todosCopy);
     setTodos(todosCopy);
   };
 
@@ -91,6 +88,7 @@ const TodoApp = () => {
     todosCopy[index] = temp;
     let updateTodo = { prev: todo, new: temp };
     dispatch(editTodo(updateTodo));
+    filterCompletedTodos(todosCopy);
     setTodos(todosCopy);
   };
 
@@ -105,15 +103,22 @@ const TodoApp = () => {
       })
     )
       handleCompleteAccExpand(true);
-    console.log(todosCopy[index].completed);
-    let temp = {
+    dispatch(completeTodo(todo));
+    let tempTodo = {
       id: todo.id,
       text: todo.text,
       completed: !todo.completed,
     };
-    todosCopy[index] = temp;
+    todosCopy[index] = tempTodo;
+    filterCompletedTodos(todosCopy);
     setTodos(todosCopy);
-    dispatch(completeTodo(temp));
+  };
+
+  const filterCompletedTodos = (latestTodos: todo[]) => {
+    let completedTodos = latestTodos.filter((todo) => {
+      return todo.completed === true;
+    });
+    setCompletedTodos(completedTodos);
   };
 
   return (
@@ -135,7 +140,7 @@ const TodoApp = () => {
             />
             <button
               type="submit"
-              onClick={handleClick}
+              onClick={handleAddTodo}
               className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
               Add
@@ -212,26 +217,17 @@ const TodoApp = () => {
               <Typography>Done</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              {todos.length > 0 &&
-              todos.some((todo) => {
-                return todo.completed === true;
-              }) ? (
+              {completedTodos.length > 0 ? (
                 todos.map((todo) => {
                   return (
-                    <>
-                      {todo.completed ? (
-                        <div className="mt-2" key={todo.id + "c"}>
-                          <Todo
-                            handleDelete={handleDelete}
-                            handleEdit={handleEdit}
-                            todo={todo}
-                            handleCompletion={handleCompletion}
-                          />
-                        </div>
-                      ) : (
-                        ""
-                      )}
-                    </>
+                    <div className="mt-2" key={todo.id.concat("c")}>
+                      <Todo
+                        handleDelete={handleDelete}
+                        handleEdit={handleEdit}
+                        todo={todo}
+                        handleCompletion={handleCompletion}
+                      />
+                    </div>
                   );
                 })
               ) : (
