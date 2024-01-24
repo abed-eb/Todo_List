@@ -42,6 +42,7 @@ export const todoListSlice = createSlice({
           id: action.payload.id,
           text: action.payload.text,
           completed: !action.payload.completed,
+          due: !action.payload.due
         };
         let index = state.todos.indexOf(action.payload);
         state.todos[index] = tempTodo

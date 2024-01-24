@@ -1,35 +1,51 @@
 import { useEffect, useState } from "react";
 import { HiBellAlert } from "react-icons/hi2";
-import Todo from "./Todo";
+import Todo from "../Todo/index";
 import React from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { editTodo, deleteTodo, completeTodo, addTodo } from "../TodoListSlice";
-import { useTodoDispatch, useTodoSelector } from "../TodoListHooks";
+import {
+  editTodo,
+  deleteTodo,
+  completeTodo,
+  addTodo,
+} from "../../TodoListSlice";
+import { useTodoDispatch, useTodoSelector } from "../../TodoListHooks";
 
 const TodoApp = () => {
   const initalTodo = {
     id: "",
     text: "",
     completed: false,
+    due: "",
   };
   const dispatch = useTodoDispatch();
   const todosList = useTodoSelector((state) => state.todoList.todos);
   const [value, setValue] = useState<string>("");
-  const [todo, setTodo] = useState<todo>(initalTodo);
+  const [due, setDue] = useState<any>(undefined);
+  // const [todo, setTodo] = useState<todo>(initalTodo);
   const [todos, setTodos] = useState<todo[]>(todosList);
   const [completedTodos, setCompletedTodos] = useState<todo[]>([]);
   const [completeAccExpanded, setCompleteAccExpanded] =
     useState<boolean>(false);
   const [todoAccExpanded, setTodoAccExpanded] = useState<boolean>(false);
 
-  const handleChange = (e: any) => {
+  const handleValueChange = (e: any) => {
     let value = e.target.value;
     setValue(value);
+  };
+
+  const handleDueChange = (e: any) => {
+    setDue(e.target.value);
+  };
+
+  const handleAddTodo = (e: any) => {
+    e.preventDefault();
     let todosCopy = [...todos];
+    if (value === "" || !due) return;
     let len = todosCopy.length;
     let id = 0;
     let todo: todo | null = null;
@@ -39,24 +55,20 @@ const TodoApp = () => {
         id: id.toString(),
         text: value,
         completed: false,
+        due: due,
       };
     } else
       todo = {
         id: id.toString(),
         text: value,
         completed: false,
+        due: due,
       };
-    setTodo(todo);
-  };
-
-  const handleAddTodo = (e: any) => {
-    e.preventDefault();
-    let todosCopy = [...todos];
-    if (todo) todosCopy.push(todo);
+    todosCopy.push(todo);
     dispatch(addTodo(todo));
     setTodos(todosCopy);
     setValue("");
-    setTodo(initalTodo);
+    setDue("");
     setTodoAccExpanded(true);
   };
 
@@ -84,6 +96,7 @@ const TodoApp = () => {
       id: todo.id,
       text: newTodo,
       completed: todo.completed,
+      due: todo.due,
     };
     todosCopy[index] = temp;
     let updateTodo = { prev: todo, new: temp };
@@ -108,6 +121,7 @@ const TodoApp = () => {
       id: todo.id,
       text: todo.text,
       completed: !todo.completed,
+      due: todo.due,
     };
     todosCopy[index] = tempTodo;
     filterCompletedTodos(todosCopy);
@@ -128,23 +142,36 @@ const TodoApp = () => {
           <div className="flex justify-center items-center text-white font-bold h-10">
             <h1>Enter your tasks</h1>
           </div>
-          <div className="relative">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-              <HiBellAlert size={20} color="white" />
+
+          <div className="flex flex-row items-center mt-2">
+            <div className="relative basis-1/2">
+              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <HiBellAlert size={20} color="white" />
+              </div>
+              <input
+                className="block w-full p-4 ps-10 text-sm text-gray-900 border outline-0 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                onChange={handleValueChange}
+                value={value}
+                placeholder="Type you todo"
+              />
             </div>
-            <input
-              className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              onChange={handleChange}
-              value={value}
-              placeholder="Type you todo"
-            />
-            <button
-              type="submit"
-              onClick={handleAddTodo}
-              className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              Add
-            </button>
+            <div className="basis-2/3 ml-2 mr-2">
+              <input
+                className="block dark:[color-scheme:dark] w-full p-4 ps-2 text-sm text-gray-900 border outline-0 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                onChange={handleDueChange}
+                type="datetime-local"
+                value={due}
+              />
+            </div>
+            <div className="basis-1/3">
+              <button
+                type="submit"
+                onClick={handleAddTodo}
+                className="text-white w-full bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm py-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                Add
+              </button>
+            </div>
           </div>
         </form>
       </div>
