@@ -4,7 +4,7 @@ import TodoApp from "./Components/TodoApp/index";
 
 function App() {
   return (
-    <div className="bg-sky-950">
+    <div className="bg-blue-950">
       <TodoApp />
     </div>
   );

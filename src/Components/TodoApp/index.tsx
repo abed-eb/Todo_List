@@ -149,7 +149,7 @@ const TodoApp = () => {
                 <HiBellAlert size={20} color="white" />
               </div>
               <input
-                className="block w-full p-4 ps-10 text-sm text-gray-900 border outline-0 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                className="block w-full p-4 ps-10 text-sm text-gray-900 border outline-0 rounded-lg bg-gray-50 dark:bg-blue-900 dark:border-blue-900 dark:placeholder-gray-400 dark:text-white"
                 onChange={handleValueChange}
                 value={value}
                 placeholder="Type you todo"
@@ -157,7 +157,7 @@ const TodoApp = () => {
             </div>
             <div className="basis-2/3 ml-2 mr-2">
               <input
-                className="block dark:[color-scheme:dark] w-full p-4 ps-2 text-sm text-gray-900 border outline-0 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                className="block dark:[color-scheme:dark] w-full p-4 ps-2 text-sm text-gray-900 border outline-0 rounded-lg bg-blue-900 dark:bg-blue-900 dark:border-blue-900 dark:placeholder-gray-400 dark:text-white"
                 onChange={handleDueChange}
                 type="datetime-local"
                 value={due}
@@ -167,7 +167,7 @@ const TodoApp = () => {
               <button
                 type="submit"
                 onClick={handleAddTodo}
-                className="text-white w-full bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm py-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="text-white w-full bg-blue-900 hover:bg-blue-900 font-medium rounded-lg text-sm py-4 dark:bg-blue-900 dark:hover:bg-blue-900 dark:focus:ring-blue-800"
               >
                 Add
               </button>
@@ -179,7 +179,7 @@ const TodoApp = () => {
         <div>
           <Accordion
             sx={{
-              backgroundColor: "#155e75",
+              backgroundColor: "rgb(30 58 138)",
               color: "white",
             }}
             expanded={todoAccExpanded}
@@ -230,7 +230,7 @@ const TodoApp = () => {
           </Accordion>
           <Accordion
             sx={{
-              backgroundColor: "#155e75",
+              backgroundColor: "rgb(30 58 138)",
               color: "white",
             }}
             expanded={completeAccExpanded}
