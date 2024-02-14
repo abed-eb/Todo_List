@@ -14,6 +14,7 @@ import {
   addTodo,
 } from "../../TodoListSlice";
 import { useTodoDispatch, useTodoSelector } from "../../TodoListHooks";
+import moment from "moment";
 
 const TodoApp = () => {
   const initalTodo = {
@@ -25,7 +26,7 @@ const TodoApp = () => {
   const dispatch = useTodoDispatch();
   const todosList = useTodoSelector((state) => state.todoList.todos);
   const [value, setValue] = useState<string>("");
-  const [due, setDue] = useState<any>(undefined);
+  const [due, setDue] = useState<Date | null>(null);
   // const [todo, setTodo] = useState<todo>(initalTodo);
   const [todos, setTodos] = useState<todo[]>(todosList);
   const [completedTodos, setCompletedTodos] = useState<todo[]>([]);
@@ -39,7 +40,8 @@ const TodoApp = () => {
   };
 
   const handleDueChange = (e: any) => {
-    setDue(e.target.value);
+    let due = moment(e.target.value).toDate();
+    setDue(due);
   };
 
   const handleAddTodo = (e: any) => {
@@ -55,20 +57,20 @@ const TodoApp = () => {
         id: id.toString(),
         text: value,
         completed: false,
-        due: due,
+        due: moment(due).format("MMMM Do YYYY, h:mm:ss a"),
       };
     } else
       todo = {
         id: id.toString(),
         text: value,
         completed: false,
-        due: due,
+        due: moment(due).format("MMMM Do YYYY, h:mm:ss a"),
       };
     todosCopy.push(todo);
     dispatch(addTodo(todo));
     setTodos(todosCopy);
     setValue("");
-    setDue("");
+    setDue(null);
     setTodoAccExpanded(true);
   };
 
@@ -89,17 +91,17 @@ const TodoApp = () => {
     setTodos(todosCopy);
   };
 
-  const handleEdit = (todo: todo, newTodo: string) => {
+  const handleEdit = (todo: todo, newTodo: todo) => {
     let todosCopy = [...todos];
     let index = todosCopy.indexOf(todo);
     let temp = {
       id: todo.id,
-      text: newTodo,
+      text: newTodo.text,
       completed: todo.completed,
-      due: todo.due,
+      due: newTodo.due,
     };
     todosCopy[index] = temp;
-    let updateTodo = { prev: todo, new: temp };
+    let updateTodo = { prev: todo, new: newTodo };
     dispatch(editTodo(updateTodo));
     filterCompletedTodos(todosCopy);
     setTodos(todosCopy);
@@ -140,7 +142,7 @@ const TodoApp = () => {
       <div>
         <form>
           <div className="flex justify-center items-center text-white font-bold h-10">
-            <h1>Enter your tasks</h1>
+            <h1>Enter your task</h1>
           </div>
 
           <div className="flex flex-row items-center mt-2">
@@ -149,7 +151,7 @@ const TodoApp = () => {
                 <HiBellAlert size={20} color="white" />
               </div>
               <input
-                className="block w-full p-4 ps-10 text-sm text-gray-900 border outline-0 rounded-lg bg-gray-50 dark:bg-blue-900 dark:border-blue-900 dark:placeholder-gray-400 dark:text-white"
+                className="block w-full p-4 ps-10 text-sm text-white outline-0 rounded-lg bg-violet-900"
                 onChange={handleValueChange}
                 value={value}
                 placeholder="Type you todo"
@@ -157,17 +159,17 @@ const TodoApp = () => {
             </div>
             <div className="basis-2/3 ml-2 mr-2">
               <input
-                className="block dark:[color-scheme:dark] w-full p-4 ps-2 text-sm text-gray-900 border outline-0 rounded-lg bg-blue-900 dark:bg-blue-900 dark:border-blue-900 dark:placeholder-gray-400 dark:text-white"
+                className="block dark:[color-scheme:dark] w-full p-4 ps-2 text-sm text-white outline-0 rounded-lg bg-violet-900"
                 onChange={handleDueChange}
                 type="datetime-local"
-                value={due}
+                value={moment(due).format("YYYY-MM-DDTHH:mm")}
               />
             </div>
             <div className="basis-1/3">
               <button
                 type="submit"
                 onClick={handleAddTodo}
-                className="text-white w-full bg-blue-900 hover:bg-blue-900 font-medium rounded-lg text-sm py-4 dark:bg-blue-900 dark:hover:bg-blue-900 dark:focus:ring-blue-800"
+                className="text-white w-full bg-violet-900 hover:bg-violet-900 font-medium rounded-lg text-sm py-4"
               >
                 Add
               </button>
@@ -179,7 +181,7 @@ const TodoApp = () => {
         <div>
           <Accordion
             sx={{
-              backgroundColor: "rgb(30 58 138)",
+              backgroundColor: "#4c1d95",
               color: "white",
             }}
             expanded={todoAccExpanded}
@@ -207,6 +209,7 @@ const TodoApp = () => {
                             handleEdit={handleEdit}
                             todo={todo}
                             handleCompletion={handleCompletion}
+                            handleDueChange={handleDueChange}
                           />
                         </div>
                       ) : (
@@ -230,7 +233,7 @@ const TodoApp = () => {
           </Accordion>
           <Accordion
             sx={{
-              backgroundColor: "rgb(30 58 138)",
+              backgroundColor: "#4c1d95",
               color: "white",
             }}
             expanded={completeAccExpanded}
@@ -253,6 +256,7 @@ const TodoApp = () => {
                         handleEdit={handleEdit}
                         todo={todo}
                         handleCompletion={handleCompletion}
+                        handleDueChange={handleDueChange}
                       />
                     </div>
                   );

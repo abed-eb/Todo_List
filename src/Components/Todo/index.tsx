@@ -3,17 +3,31 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FileDownloadDoneIcon from "@mui/icons-material/FileDownloadDone";
 import { useState, useEffect } from "react";
+import moment from "moment";
 
 interface props {
   todo: todo;
   handleDelete: (todo: todo) => void;
-  handleEdit: (todo: todo, newTodo: string) => void;
+  handleEdit: (todo: todo, newTodo: todo) => void;
   handleCompletion: (todo: todo) => void;
+  handleDueChange: (e: any) => void;
 }
 
-const Todo = ({ todo, handleDelete, handleEdit, handleCompletion }: props) => {
+const Todo = ({
+  todo,
+  handleDelete,
+  handleEdit,
+  handleCompletion,
+  handleDueChange,
+}: props) => {
   const [editingTodo, setEditingTodo] = useState<todo | null>(null);
-  const [newTodo, setNewTodo] = useState<string>(todo.text);
+  const [newDue, setNewDue] = useState<Date | null>(null);
+  const [newTodo, setNewTodo] = useState<todo>({
+    id: todo.id,
+    text: todo.text,
+    completed: todo.completed,
+    due: todo.due,
+  });
 
   const handleChange = (todo: todo | null) => {
     if (todo) handleCompletion(todo);
@@ -22,10 +36,24 @@ const Todo = ({ todo, handleDelete, handleEdit, handleCompletion }: props) => {
   const onEdit = (todo: todo) => {
     setEditingTodo(todo);
   };
+  const onTextChange = (e: any) => {
+    setNewTodo((prevState) => ({
+      ...prevState,
+      text: e.target.value,
+    }));
+  };
+
+  const onDueChange = (e: any) => {
+    let due = moment(e.target.value).toDate();
+    setNewDue(due);
+    setNewTodo((prevState) => ({
+      ...prevState,
+      due: moment(due).format("MMMM Do YYYY, h:mm:ss a"),
+    }));
+  };
 
   const onEditComplete = (todo: todo) => {
     setEditingTodo(null);
-    console.log(editingTodo);
     handleEdit(todo, newTodo);
   };
 
@@ -49,23 +77,23 @@ const Todo = ({ todo, handleDelete, handleEdit, handleCompletion }: props) => {
                 {todo.text}
               </h1>
             </div>
-            <div className="basis-1/4">Due: {todo.due?.toString()}</div>
+            <div className="basis-1/4">Due: {todo.due}</div>
           </div>
         ) : (
           <div className="w-full flex flex-row items-center">
             <div className="basis-1/2">
               <input
                 className="block outline-0 w-full p-4 ps-3 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                onChange={(e) => setNewTodo(e.target.value)}
-                value={newTodo}
+                onChange={(e) => onTextChange(e)}
+                value={newTodo.text}
               />
             </div>
             <div className="basis-1/2 ml-2 mr-2">
               <input
                 className="block dark:[color-scheme:dark] w-full p-4 ps-2 text-sm text-gray-900 border outline-0 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                // onChange={handleDueChange}
+                onChange={(e) => onDueChange(e)}
                 type="datetime-local"
-                value={todo.due}
+                value={moment(newDue).format("YYYY-MM-DDTHH:mm")}
               />
             </div>
           </div>
