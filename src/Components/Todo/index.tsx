@@ -21,7 +21,7 @@ const Todo = ({
   handleDueChange,
 }: props) => {
   const [editingTodo, setEditingTodo] = useState<todo | null>(null);
-  const [newDue, setNewDue] = useState<Date | null>(null);
+  const [newDue, setNewDue] = useState<Date | null>(moment(todo.due).toDate());
   const [newTodo, setNewTodo] = useState<todo>({
     id: todo.id,
     text: todo.text,
@@ -48,7 +48,7 @@ const Todo = ({
     setNewDue(due);
     setNewTodo((prevState) => ({
       ...prevState,
-      due: moment(due).format("MMMM Do YYYY, h:mm:ss a"),
+      due: due,
     }));
   };
 
@@ -77,7 +77,9 @@ const Todo = ({
                 {todo.text}
               </h1>
             </div>
-            <div className="basis-1/4">Due: {todo.due}</div>
+            <div className="basis-1/4">
+              Due: {moment(todo.due).format("MMMM Do YYYY, h:mm:ss a")}
+            </div>
           </div>
         ) : (
           <div className="w-full flex flex-row items-center">

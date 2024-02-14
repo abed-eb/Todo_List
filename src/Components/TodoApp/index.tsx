@@ -57,14 +57,14 @@ const TodoApp = () => {
         id: id.toString(),
         text: value,
         completed: false,
-        due: moment(due).format("MMMM Do YYYY, h:mm:ss a"),
+        due: due,
       };
     } else
       todo = {
         id: id.toString(),
         text: value,
         completed: false,
-        due: moment(due).format("MMMM Do YYYY, h:mm:ss a"),
+        due: due,
       };
     todosCopy.push(todo);
     dispatch(addTodo(todo));
