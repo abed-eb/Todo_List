@@ -118,7 +118,7 @@ const TodoApp = () => {
       })
     )
       handleCompleteAccExpand(true);
-    dispatch(completeTodo(todo));
+    // dispatch(completeTodo(todo));
     let tempTodo = {
       id: todo.id,
       text: todo.text,
@@ -134,6 +134,7 @@ const TodoApp = () => {
     let completedTodos = latestTodos.filter((todo) => {
       return todo.completed === true;
     });
+    console.log(completedTodos);
     setCompletedTodos(completedTodos);
   };
 
@@ -248,7 +249,10 @@ const TodoApp = () => {
             </AccordionSummary>
             <AccordionDetails>
               {completedTodos.length > 0 ? (
-                todos.map((todo) => {
+                completedTodos.map((todo) => {
+                  {
+                    console.log(todo);
+                  }
                   return (
                     <div className="mt-2" key={todo.id.concat("c")}>
                       <Todo
